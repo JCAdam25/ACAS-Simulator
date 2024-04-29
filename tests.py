@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import simulator as sim
-import animator as ani
+import visualiser as vis
 
 def test_create_initial_conditions():
     '''
@@ -203,23 +203,40 @@ def test_step():
 
     return 0
 
+def test_animator():
+    '''
+    Produces an example animation
+    '''
+    own_path = [[0.0],[0.0]]
+    int_path = [[-5000.0],[5000.0]]
+    path_commands = ["COC"]
+    for i in range(100):
+        own_path[0].append(own_path[0][i]+50)
+        own_path[1].append(own_path[1][i]+100)
+        int_path[0].append(int_path[0][i]+80)
+        int_path[1].append(int_path[1][i]-40)
+        path_commands.append(sim.COMMANDS_NAMES[int((i-(i%20))/20)])
+
+    vis.animate(own_path, int_path, path_commands)
+        
 def system_test(draw=False):
     '''
     Tests the simulation system and prints out the returns
     Set to True to draw simulation as well, however drawing must be closed after viewing to print out results
     '''
     own_path, int_path, path_commands, path_distances = sim.run_simulation(10000, 1/4*math.pi, 3/2*math.pi, 250, 250, draw)
-    own_path_string = f"Ownship: ({own_path[0][0]},{own_path[1][0]})"
-    int_path_string = f"Intruder: ({int_path[0][0]},{int_path[1][0]})"
+    test_string = f"Ownship: ({own_path[0][0]},{own_path[1][0]}, Intruder: ({int_path[0][0]},{int_path[1][0]}, Command: {path_commands[0]}, Distance: {path_distances[0]}\n)"
     for i in range(1, len(own_path[0])):
-        own_path_string = own_path_string + f"->({own_path[0][i]},{own_path[1][i]})"
-        int_path_string = int_path_string + f"->({int_path[0][i]},{int_path[1][i]})"
-    print(own_path_string)
-    print(int_path_string)
-    print(path_distances)
-    print(path_commands)
-    
+        test_string = test_string + f"Ownship: ({own_path[0][i]},{own_path[1][i]})"
+        test_string = test_string + f", Intruder: ({int_path[0][i]},{int_path[1][i]})"
+        test_string = test_string + f", Command: {path_commands[i]}"
+        test_string = test_string + f", Distance: {path_distances[i]}\n"
+    print(test_string)
+
 def run_all_unit_tests():
+    '''
+    Runs all unit tests for simulation.py until one of them fails
+    '''
     failed = 0
     failed = test_create_initial_conditions()
     if failed == 0:
@@ -234,6 +251,9 @@ def run_all_unit_tests():
         failed = test_run_network()
     if failed == 0:
         failed = test_step()
+    if failed == 0:
+        print(f"All units tests succeeded")
 
 run_all_unit_tests()
-system_test()
+test_animator()
+system_test(True)

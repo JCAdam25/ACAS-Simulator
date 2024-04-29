@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import onnxruntime as ort
-import animator as ani
+import visualiser as vis
 
 TIME_STEP = 0.1 # time covered in each step forward
 COMMANDS_ACTIONS = [math.radians(0.0), math.radians(1.5), math.radians(-1.5), math.radians(3.0), math.radians(-3.0)] # degrees to be turned left per command, stored in radian form
@@ -136,7 +136,7 @@ def run_simulation(rho, theta, psi, v_own, v_int, visualise=True):
         print(f"The ACAS-Xu system failed to prevent the intruder entering the NMAC zone")
 
     if visualise == True:
-        ani.animate(own_path, int_path, path_commands)
+        vis.animate(own_path, int_path, path_commands)
 
     return own_path, int_path, path_commands, path_distances
 
@@ -177,7 +177,7 @@ if __name__ == "__main__":
     while init_rho < 10000 or init_rho > 60000:
         init_rho = float(input("Distance between the Ownship and Intruder(ft): "))
     init_theta = -1
-    while init_theta < 0 or init_rho >= 2*math.pi:
+    while init_theta < 0 or init_theta >= 2*math.pi:
         init_theta = float(input("Angle to Intruder with regards to Ownship heading(rad): "))
     init_psi = -1
     while init_psi < 0 or init_psi >= 2*math.pi:

@@ -6,13 +6,13 @@ import simulator as sim
 
 COMMANDS_COLOURS = ['red', 'orange', 'purple', 'yellow', 'blue']
 
-def animate(own_path, int_path, path_commands):
+def animate(own_path, int_path, path_commands, frames_per_second = 2):
     '''
     Draws an animated plot of an encounter, rendering both aircrafts flight paths
     Colours Ownship's path depending on the command being followed
     Writes out separation at each step
     '''
-
+    Interval = int(1000/frames_per_second)
     def init():
         '''
         Initialises the plot
@@ -57,9 +57,12 @@ def animate(own_path, int_path, path_commands):
                    horizontalalignment='left',
                    verticalalignment='center')
 
-    ani = FuncAnimation(fig, update, frames=range(0,len(own_path[0]),5), init_func=init, blit=True, interval=100, repeat=False)
+    ani = FuncAnimation(fig, update, frames=range(0,len(own_path[0]),5), init_func=init, blit=True, interval=Interval, repeat=False)
     ax.plot([],[], color='green', label='Intruder')
     for i in range(len(sim.COMMANDS_NAMES)):
         ax.plot([],[], color=COMMANDS_COLOURS[i], label=sim.COMMANDS_NAMES[i])
+    plt.title('A figure showing the flight paths of the Intruder and Ownship')
+    plt.xlabel('Distance east from start point of the Ownship (ft)')
+    plt.ylabel('Distance north from start point of the Ownship (ft)')
     plt.legend()
     plt.show()

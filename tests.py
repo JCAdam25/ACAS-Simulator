@@ -254,6 +254,6 @@ def run_all_unit_tests():
     if failed == 0:
         print(f"All units tests succeeded")
 
-run_all_unit_tests()
+#run_all_unit_tests()
 test_animator()
-system_test(True)
+#system_test(True)

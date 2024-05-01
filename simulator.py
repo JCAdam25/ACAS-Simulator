@@ -76,7 +76,7 @@ def find_time_to_LOS_number(own_state, int_state):
         int_x = int_x + ((int_state[3] * math.sin(-int_state[2])) * TIME_STEP)
         int_y = int_y + ((int_state[3] * math.cos(-int_state[2])) * TIME_STEP)
         
-        if math.dist([own_x,own_y],[int_x,int_y]) > distance: # checks that the aircraft hasn't already passed point of closest approach without breaking NMAC
+        if math.dist([own_x,own_y],[int_x,int_y]) >= distance: # checks that the aircraft hasn't already passed point of closest approach without breaking NMAC
             return len(LOS_TIMES)
         distance = math.dist([own_x,own_y],[int_x,int_y])
 
@@ -113,31 +113,36 @@ def run_simulation(rho, theta, psi, v_own, v_int, visualise=True):
     Main function for running a simulation
     visualise=False can be used to not draw the encounter
     '''
-    print(f"Simulating initial conditions [{rho}, {theta}, {psi}, {v_own}, {v_int}]")
     own_state, int_state, own_path, int_path, path_commands, path_distances = create_initial_conditions(rho, theta, psi, v_own, v_int)
     min_distance = rho
     current_command = 1
     first_step = True
     passed = False
-    rho = rho
+    distance = rho
     
-    while rho < 1000 or passed == False:
+    while current_command != 0 or passed == False:
         if first_step == True:
             current_command = 0
             first_step = False
         current_command = run_network(current_command, own_state, int_state)
         own_state, own_path, int_state, int_path, min_distance, path_commands, path_distances = step(current_command, own_state, own_path, int_state, int_path, min_distance, path_commands, path_distances)
-        if find_rho(own_state, int_state) > rho:
+        if find_rho(own_state, int_state) >= distance:
             passed = True
-        rho = find_rho(own_state, int_state)
-
-    print(f"The aircraft reached a minimum distance of {min_distance}")
-    if min_distance <= 500:
-        print(f"The ACAS-Xu system failed to prevent the intruder entering the NMAC zone")
+        distance = find_rho(own_state, int_state)
 
     if visualise == True:
+        if min_distance <= 500:
+            print(f"The ACAS-Xu system failed to prevent the intruder entering the NMAC zone")
+        print(f"Simulating initial conditions [{rho}, {theta}, {psi}, {v_own}, {v_int}]")
+        print(f"The aircraft reached a minimum distance of {min_distance}")
+        
         vis.animate(own_path, int_path, path_commands)
-
+    else:
+        if min_distance <= 500:
+            print(f"The ACAS-Xu system failed to prevent the intruder entering the NMAC zone")
+            print(f"With initial conditions [{rho}, {theta}, {psi}, {v_own}, {v_int}]")
+            print(f"The aircraft reached a minimum distance of {min_distance}")               
+            
     return own_path, int_path, path_commands, path_distances
 
 def step(current_command, own_state, own_path, int_state, int_path, min_distance, path_commands, path_distances):

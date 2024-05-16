@@ -6,7 +6,7 @@ import simulator as sim
 
 COMMANDS_COLOURS = ['red', 'orange', 'purple', 'yellow', 'blue']
 
-def animate(own_path, int_path, path_commands, frames_per_second = 2):
+def animate(own_path, int_path, path_commands, frames_per_second = 4):
     '''
     Draws an animated plot of an encounter, rendering both aircrafts flight paths
     Colours Ownship's path depending on the command being followed
